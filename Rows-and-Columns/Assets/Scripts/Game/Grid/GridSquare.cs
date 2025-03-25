@@ -6,15 +6,15 @@ using UnityEngine.UI;
 public class GridSquare : MonoBehaviour
 {
     public Image normalImage;
-    public List<Sprite> normalImages;
+    public Sprite normalSprite;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         
     }
 
-    public void SetImage(bool setFirstImage)
+    public void SetImage()
     {
-        normalImage.GetComponent<Image>().sprite = setFirstImage ? normalImages[1] : normalImages[0];
+        normalImage.GetComponent<Image>().sprite = normalSprite;
     }
 }
