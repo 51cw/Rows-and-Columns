@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 public class Grid : MonoBehaviour
@@ -13,6 +14,16 @@ public class Grid : MonoBehaviour
 
     private Vector2 _offset = new Vector2(0.0f, 0.0f);
     private List<GameObject> _gridSquares = new List<GameObject>();
+
+    private void OnEnable()
+    {
+        GameEvents.CheckIfShapeCanBePlaced += CheckIfShapeCanBePlaced;
+    }
+
+    private void OnDisable()
+    {
+        GameEvents.CheckIfShapeCanBePlaced -= CheckIfShapeCanBePlaced;
+    }
 
 
 
@@ -49,7 +60,6 @@ public class Grid : MonoBehaviour
     {
         int ColNum = 0;
         int RowNum = 0;
-        bool row_moved = false;
 
         var square_rect = _gridSquares[0].GetComponent<RectTransform>();
 
@@ -62,7 +72,6 @@ public class Grid : MonoBehaviour
             {
                 ColNum = 0;
                 RowNum++;
-                row_moved = false;
             }
 
             var pos_x_offset = _offset.x * ColNum;
@@ -73,5 +82,17 @@ public class Grid : MonoBehaviour
             ColNum++;
         }
 
+    }
+    private void CheckIfShapeCanBePlaced()
+    {
+        foreach(var square in _gridSquares)
+        {
+            var gridSquare = square.GetComponent<GridSquare>();
+
+            if (gridSquare.CanWeUseThisSQ() == true)
+            {
+                gridSquare.ActivateSquare();
+            }
+        }
     }
 }
