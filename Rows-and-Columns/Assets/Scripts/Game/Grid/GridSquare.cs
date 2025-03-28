@@ -9,11 +9,11 @@ public class GridSquare : MonoBehaviour
     public Image activeImage;
     public Image normalImage;
 
-    public bool Selected {  get; set; }
-    public int SquareIndex {  get; set; }
-    public bool SquareOccupied {  get; set; }
+    public bool Selected { get; set; }
+    public int SquareIndex { get; set; }
+    public bool SquareOccupied { get; set; }
 
-    
+    public Grid grid;
     void Start()
     {
         Selected = false;
@@ -24,6 +24,11 @@ public class GridSquare : MonoBehaviour
     public bool CanWeUseThisSQ()
     {
         return hoverImage.gameObject.activeSelf;
+    }
+
+    public void PlaceShapeOnBoard()
+    {
+        ActivateSquare();
     }
 
     public void ActivateSquare()
@@ -37,19 +42,37 @@ public class GridSquare : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        hoverImage.gameObject.SetActive(true);
-        normalImage.gameObject.SetActive(false);
+
+        if (!SquareOccupied)
+        {
+            Selected = true;
+            hoverImage.gameObject.SetActive(grid.CanShapeBePlaced());
+            normalImage.gameObject.SetActive(!grid.CanShapeBePlaced());
+        }
+
     }
 
     private void OnTriggerStay2D(Collider2D collision)
     {
-        hoverImage.gameObject.SetActive(true);
-        normalImage.gameObject.SetActive(false);
+
+        Selected = true;
+
+        if (!SquareOccupied && grid.CanShapeBePlaced())
+        {
+            hoverImage.gameObject.SetActive(grid.CanShapeBePlaced());
+            normalImage.gameObject.SetActive(!grid.CanShapeBePlaced());
+        }
+
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        hoverImage.gameObject.SetActive(false);
-        normalImage.gameObject.SetActive(true);
+        if (!SquareOccupied)
+        {
+            Selected = false;
+            hoverImage.gameObject.SetActive(false);
+            normalImage.gameObject.SetActive(true);
+
+        }
     }
 }

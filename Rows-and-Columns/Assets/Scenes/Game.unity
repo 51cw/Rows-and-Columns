@@ -164,7 +164,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1998966227}
+  m_Father: {fileID: 1469816430}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -603,6 +603,7 @@ RectTransform:
   - {fileID: 1330990973}
   - {fileID: 1797753368}
   - {fileID: 1998966227}
+  - {fileID: 147310945}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -733,6 +734,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd0865320d4e0c146a015e52909af8ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  shapeStorage: {fileID: 147310946}
   Columns: 8
   Rows: 8
   GridSquare: {fileID: 712003224439707609, guid: 52cd985f65d9bed43a52765567418e8b, type: 3}
@@ -976,7 +978,6 @@ RectTransform:
   - {fileID: 2008440021}
   - {fileID: 161360349}
   - {fileID: 52464508}
-  - {fileID: 147310945}
   m_Father: {fileID: 1469816430}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}

@@ -2,9 +2,11 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System;
 using UnityEngine;
+using JetBrains.Annotations;
 
 public class Grid : MonoBehaviour
 {
+    public ShapeStorage shapeStorage;
     public int Columns = 0;
     public int Rows = 0;
     public GameObject GridSquare;
@@ -48,9 +50,10 @@ public class Grid : MonoBehaviour
             for (var col = 0; col < Columns; col++)
             {
                 _gridSquares.Add(Instantiate(GridSquare) as GameObject);
+                _gridSquares[_gridSquares.Count - 1].GetComponent<GridSquare>().SquareIndex = SquareIndex;
                 _gridSquares[_gridSquares.Count - 1].transform.SetParent(this.transform);
                 _gridSquares[_gridSquares.Count - 1].transform.localScale = new Vector3(SquareScale, SquareScale, SquareScale);
-                
+                _gridSquares[_gridSquares.Count - 1].GetComponent<GridSquare>().grid = this;
                 SquareIndex++;
             }
         }
@@ -76,7 +79,7 @@ public class Grid : MonoBehaviour
 
             var pos_x_offset = _offset.x * ColNum;
             var pos_y_offset = _offset.y * RowNum;
-             
+
             square.GetComponent<RectTransform>().anchoredPosition = new Vector2(StartPosition.x + pos_x_offset, StartPosition.y - pos_y_offset);
             square.GetComponent<RectTransform>().localPosition = new Vector3(StartPosition.x + pos_x_offset, StartPosition.y - pos_y_offset, 0.0f);
             ColNum++;
@@ -85,14 +88,50 @@ public class Grid : MonoBehaviour
     }
     private void CheckIfShapeCanBePlaced()
     {
-        foreach(var square in _gridSquares)
+        var squareIndexes = new List<int>();
+        foreach (var square in _gridSquares)
         {
             var gridSquare = square.GetComponent<GridSquare>();
 
-            if (gridSquare.CanWeUseThisSQ() == true)
+            if (gridSquare.Selected && !gridSquare.SquareOccupied)
             {
-                gridSquare.ActivateSquare();
+                squareIndexes.Add(gridSquare.SquareIndex);
+                gridSquare.Selected = false;
+                //gridSquare.ActivateSquare();
             }
         }
+        var currentSelectedShape = shapeStorage.GetCurrentSelectedShape();
+        if (currentSelectedShape == null) return;
+
+        if (currentSelectedShape.TotalSquareNumber == squareIndexes.Count)
+        {
+            foreach (var squareIndex in squareIndexes)
+            {
+                _gridSquares[squareIndex].GetComponent<GridSquare>().PlaceShapeOnBoard();
+            }
+            currentSelectedShape.DeactivateShape();
+        }
+        else
+        {
+            GameEvents.MoveShapeToStartPosition();
+        }
+       
+    }
+    public bool CanShapeBePlaced()
+    {
+        var squareIndexes = new List<int>();
+        foreach (var square in _gridSquares)
+        {
+            var gridSquare = square.GetComponent<GridSquare>();
+            if (gridSquare.Selected && !gridSquare.SquareOccupied)
+            {
+                squareIndexes.Add(gridSquare.SquareIndex);
+            }
+        }
+
+        var currentSelectedShape = shapeStorage.GetCurrentSelectedShape();
+        if (currentSelectedShape == null) return false;
+
+        return currentSelectedShape.TotalSquareNumber == squareIndexes.Count;
     }
 }
