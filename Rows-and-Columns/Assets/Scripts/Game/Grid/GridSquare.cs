@@ -39,6 +39,16 @@ public class GridSquare : MonoBehaviour
         SquareOccupied = true;
     }
 
+    public void DeactivateSquare()
+    {
+        activeImage.gameObject.SetActive(false);
+        normalImage.gameObject.SetActive(true);
+    }
+    public void ClearOccupied()
+    {
+        Selected = false;
+        SquareOccupied = false;
+    }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -57,7 +67,7 @@ public class GridSquare : MonoBehaviour
 
         Selected = true;
 
-        if (!SquareOccupied && grid.CanShapeBePlaced())
+        if (!SquareOccupied)
         {
             hoverImage.gameObject.SetActive(grid.CanShapeBePlaced());
             normalImage.gameObject.SetActive(!grid.CanShapeBePlaced());
