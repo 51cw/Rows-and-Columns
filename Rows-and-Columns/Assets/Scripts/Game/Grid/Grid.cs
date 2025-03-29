@@ -157,7 +157,7 @@ public class Grid : MonoBehaviour
         return currentSelectedShape.TotalSquareNumber == squareIndexes.Count;
     }
 
-    public void CheckIfAnyLineIsCompleted()
+    private void CheckIfAnyLineIsCompleted()
     {
         List < int[]> lines = new List <int[]>();
 
@@ -184,6 +184,12 @@ public class Grid : MonoBehaviour
             //TODO: play bonus animation
         }
 
+        if (completedLines > 0)
+        {
+            var totalScore = (10 * completedLines);
+            GameEvents.AddScore(totalScore);
+        }
+        
         //TODO: Add score
     }
 
