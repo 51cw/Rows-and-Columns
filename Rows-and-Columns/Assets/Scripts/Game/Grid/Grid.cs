@@ -36,7 +36,6 @@ public class Grid : MonoBehaviour
     {
         _lineIndicator = GetComponent<LineIndicator>();
         CreateGrid();
-
     }
 
 
@@ -102,7 +101,6 @@ public class Grid : MonoBehaviour
             {
                 squareIndexes.Add(gridSquare.SquareIndex);
                 gridSquare.Selected = false;
-                //gridSquare.ActivateSquare();
             }
         }
         var currentSelectedShape = shapeStorage.GetCurrentSelectedShape();
@@ -182,11 +180,6 @@ public class Grid : MonoBehaviour
 
         var completedLines = CheckIfSquaresAreCompleted(lines);
 
-        if(completedLines > 2)
-        {
-            //TODO: play bonus animation
-        }
-
         if (completedLines > 0)
         {
             if (shapesPlacedSinceLastCompleted < 4)
@@ -196,7 +189,7 @@ public class Grid : MonoBehaviour
             var totalScore = (10 * completedLines * combo);
             GameEvents.AddScore(totalScore);
         }
-        Debug.Log("combo: " + combo + "  shapes placed since: " + shapesPlacedSinceLastCompleted);
+        
         CheckIfPlayerLost();
     }
 
@@ -269,12 +262,12 @@ public class Grid : MonoBehaviour
         if (validShapes < 1 && activeShapes > 2) 
         {
             GameEvents.RequestNewShapes();
-            Debug.Log("RequestedNewShapes");
+            
         }
         else if (validShapes < 1) 
         {
             GameEvents.GameOver(false);
-            Debug.Log("GameOver Active shapes:" + activeShapes);
+            
         }
     }
 

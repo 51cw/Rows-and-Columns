@@ -57,6 +57,7 @@ MonoBehaviour:
   hoverImage: {fileID: 695416053468850870}
   activeImage: {fileID: 6939782878117792707}
   normalImage: {fileID: 961844152416712157}
+  grid: {fileID: 0}
 --- !u!61 &1483559116137510350
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -101,7 +102,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 70, y: 70}
+  m_Size: {x: 68, y: 68}
   m_EdgeRadius: 0
 --- !u!50 &448159096295363213
 Rigidbody2D:

@@ -3,23 +3,25 @@ using UnityEngine.UI;
 
 public class ShapeSquare : MonoBehaviour
 {
-    public Image occupiedImage;
+    public Image Image;
 
     void Start()
     {
-        occupiedImage.gameObject.SetActive(false);
+        Image.gameObject.SetActive(true);
     }
 
     public void ActivateSquare()
     {
         gameObject.GetComponent<BoxCollider2D>().enabled = true;   
         gameObject.SetActive(true);
+        
     }
 
     public void DeactivateSquare()
     {
         gameObject.GetComponent<BoxCollider2D>().enabled = false;   
         gameObject.SetActive(false);
+        
 
     }
 

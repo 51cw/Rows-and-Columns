@@ -3,8 +3,7 @@ using UnityEngine;
 public class GameOverPopup : MonoBehaviour
 {
     public GameObject gameOverPopup;
-    public GameObject loosePopup;
-    public GameObject newBestScorePopup;
+
     void Start()
     {
         gameOverPopup.SetActive(false);
@@ -23,7 +22,5 @@ public class GameOverPopup : MonoBehaviour
     private void OnGameOver(bool newbestscore)
     {
         gameOverPopup.SetActive(true);
-        loosePopup.SetActive(false);
-        newBestScorePopup.SetActive(true);
     }
 }
