@@ -1,25 +1,29 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using static UnityEditor.PlayerSettings;
 
+
+// Shape class that handles draggable puzzle pieces with multiple interaction events
 public class Shape : MonoBehaviour, IPointerClickHandler, IPointerUpHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerDownHandler
 {
-    public GameObject squareShapeImage;
-    public Vector3 shapeSelectedScale;
-    public Vector2 offset = new Vector2(0f, 200f);
+    // Configuration variables
+    public GameObject squareShapeImage;       // Prefab for individual shape squares
+    public Vector3 shapeSelectedScale;        // Scale when shape is selected/dragged
+    public Vector2 offset = new Vector2(0f, 200f);  // Position offset during drag
 
     [HideInInspector]
-    public ShapeData CurrentShapeData;
-    public int TotalSquareNumber { get; set; }
+    public ShapeData CurrentShapeData;        // Data structure defining this shape's pattern
+    public int TotalSquareNumber { get; set; } // Total active squares in this shape
 
-    private List<GameObject> _currentShape = new List<GameObject>();
-    private Vector3 _shapeStartScale;
-    private RectTransform _transform;
-    private Canvas _canvas;
-    private Vector3 _startPosition;
-    private bool _shapeActive = true;
+    // Runtime variables
+    private List<GameObject> _currentShape = new List<GameObject>(); // All square objects in this shape
+    private Vector3 _shapeStartScale;         // Original scale before selection
+    private RectTransform _transform;         // This shape's transform component
+    private Canvas _canvas;                   // Parent canvas for coordinate conversion
+    private Vector3 _startPosition;           // Original position in the shape palette
+    private bool _shapeActive = true;         // Whether this shape is currently active
 
+    // Initialization
     public void Awake()
     {
         _shapeStartScale = this.GetComponent<RectTransform>().localScale;
@@ -28,6 +32,7 @@ public class Shape : MonoBehaviour, IPointerClickHandler, IPointerUpHandler, IBe
         _startPosition = _transform.localPosition;
     }
 
+    // Event subscription management
     private void OnEnable()
     {
         GameEvents.MoveShapeToStartPosition += MoveShapeToStartPosition;
@@ -40,7 +45,7 @@ public class Shape : MonoBehaviour, IPointerClickHandler, IPointerUpHandler, IBe
         GameEvents.SetShapeInactive -= SetShapeInactive;
     }
 
-
+    // Shape state checks
     public bool IsOnStartPosition()
     {
         return _transform.localPosition == _startPosition;
@@ -55,6 +60,8 @@ public class Shape : MonoBehaviour, IPointerClickHandler, IPointerUpHandler, IBe
         }
         return false;
     }
+
+    // Shape activation/deactivation
     public void ActivateShape()
     {
         if (!_shapeActive)
@@ -66,6 +73,7 @@ public class Shape : MonoBehaviour, IPointerClickHandler, IPointerUpHandler, IBe
         }
         _shapeActive = true;
     }
+
     private void SetShapeInactive()
     {
         if (IsAnyOfShapeSquareActive() && !IsOnStartPosition())
@@ -76,6 +84,7 @@ public class Shape : MonoBehaviour, IPointerClickHandler, IPointerUpHandler, IBe
             }
         }
     }
+
     public void DeactivateShape()
     {
         if (_shapeActive)
@@ -88,6 +97,7 @@ public class Shape : MonoBehaviour, IPointerClickHandler, IPointerUpHandler, IBe
         _shapeActive = false;
     }
 
+    // Shape creation and management
     public void RequestNewShape(ShapeData shapeData)
     {
         _transform.localPosition = _startPosition;
@@ -99,20 +109,25 @@ public class Shape : MonoBehaviour, IPointerClickHandler, IPointerUpHandler, IBe
         CurrentShapeData = shapeData;
         TotalSquareNumber = GetNumberOfSgaures(shapeData);
 
+        // Ensure we have enough square objects
         while (_currentShape.Count <= TotalSquareNumber)
         {
             _currentShape.Add(Instantiate(squareShapeImage, transform) as GameObject);
         }
 
+        // Reset all squares
         foreach (var square in _currentShape)
         {
             square.gameObject.transform.position = Vector3.zero;
             square.gameObject.SetActive(false);
         }
 
+        // Calculate square positioning
         var squareRect = squareShapeImage.GetComponent<RectTransform>();
-        var moveDistance = new Vector2(squareRect.rect.width * squareRect.localScale.x, squareRect.rect.height * squareRect.localScale.y);
+        var moveDistance = new Vector2(squareRect.rect.width * squareRect.localScale.x,
+                                     squareRect.rect.height * squareRect.localScale.y);
 
+        // Activate and position squares according to shape data
         int currentIndexInList = 0;
         for (var row = 0; row < shapeData.rows; row++)
         {
@@ -121,15 +136,16 @@ public class Shape : MonoBehaviour, IPointerClickHandler, IPointerUpHandler, IBe
                 if (shapeData.board[row].column[column])
                 {
                     _currentShape[currentIndexInList].SetActive(true);
-                    _currentShape[currentIndexInList].GetComponent<RectTransform>().localPosition = new Vector2(GetXPositionForShapeSquare(shapeData, column, moveDistance), GetYPositionForShapeSquare(shapeData, row, moveDistance));
-
+                    _currentShape[currentIndexInList].GetComponent<RectTransform>().localPosition =
+                        new Vector2(GetXPositionForShapeSquare(shapeData, column, moveDistance),
+                                  GetYPositionForShapeSquare(shapeData, row, moveDistance));
                     currentIndexInList++;
                 }
             }
         }
-
-
     }
+
+    // Positioning calculations
     private float GetYPositionForShapeSquare(ShapeData shapeData, int row, Vector2 moveDistance)
     {
         if (shapeData.rows <= 1) return 0f;
@@ -137,12 +153,12 @@ public class Shape : MonoBehaviour, IPointerClickHandler, IPointerUpHandler, IBe
         float centerOffset;
         int middleRow = shapeData.rows / 2;
 
-        if (shapeData.rows % 2 != 0)
+        if (shapeData.rows % 2 != 0) // Odd number of rows
         {
             int rowOffset = row - middleRow;
             centerOffset = -rowOffset * moveDistance.y;
         }
-        else
+        else // Even number of rows
         {
             float centerGap = moveDistance.y;
             int rowOffset = row - middleRow + 1;
@@ -159,12 +175,12 @@ public class Shape : MonoBehaviour, IPointerClickHandler, IPointerUpHandler, IBe
         float centerOffset;
         int middleCol = shapeData.columns / 2;
 
-        if (shapeData.columns % 2 != 0)
+        if (shapeData.columns % 2 != 0) // Odd number of columns
         {
             int colOffset = column - middleCol;
             centerOffset = colOffset * moveDistance.x;
         }
-        else
+        else // Even number of columns
         {
             float centerGap = moveDistance.x;
             int colOffset = column - middleCol + 1;
@@ -173,31 +189,26 @@ public class Shape : MonoBehaviour, IPointerClickHandler, IPointerUpHandler, IBe
 
         return centerOffset;
     }
+
+    // Helper methods
     private int GetNumberOfSgaures(ShapeData shapeData)
     {
         int number = 0;
-
         foreach (var rowData in shapeData.board)
         {
             foreach (var active in rowData.column)
             {
                 if (active)
                     number++;
-
             }
         }
         return number;
     }
 
-    public void OnPointerClick(PointerEventData eventData)
-    {
+    // Input event handlers
+    public void OnPointerClick(PointerEventData eventData) { }
 
-    }
-
-    public void OnPointerUp(PointerEventData eventData)
-    {
-
-    }
+    public void OnPointerUp(PointerEventData eventData) { }
 
     public void OnBeginDrag(PointerEventData eventData)
     {
@@ -211,7 +222,8 @@ public class Shape : MonoBehaviour, IPointerClickHandler, IPointerUpHandler, IBe
         _transform.pivot = Vector2.zero;
 
         Vector2 pos;
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(_canvas.transform as RectTransform, eventData.position, Camera.main, out pos);
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(_canvas.transform as RectTransform,
+            eventData.position, Camera.main, out pos);
         _transform.localPosition = pos + offset;
     }
 
@@ -219,13 +231,9 @@ public class Shape : MonoBehaviour, IPointerClickHandler, IPointerUpHandler, IBe
     {
         this.GetComponent<RectTransform>().localScale = _shapeStartScale;
         GameEvents.CheckIfShapeCanBePlaced();
-
     }
 
-    public void OnPointerDown(PointerEventData eventData)
-    {
-
-    }
+    public void OnPointerDown(PointerEventData eventData) { }
 
     private void MoveShapeToStartPosition()
     {

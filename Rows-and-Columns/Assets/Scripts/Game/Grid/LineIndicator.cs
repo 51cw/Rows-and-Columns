@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class LineIndicator : MonoBehaviour
 {
+    // 8x8 grid mapping each position to a unique index (0-63)
+    // Represents the game board's coordinate system
     public int[,] line_data = new int[8, 8]
     {
         {  0,  1,  2,  3,  4,  5,  6,  7 },
@@ -14,39 +16,49 @@ public class LineIndicator : MonoBehaviour
         { 56, 57, 58, 59, 60, 61, 62, 63 }
     };
 
-    [HideInInspector] public int[] columnIndexes = new int[8]
+    // Column indexes for vertical line checking
+    [HideInInspector]
+    public int[] columnIndexes = new int[8]
     {
         0, 1, 2, 3, 4, 5, 6, 7
     };
+
+    // Converts a square index (0-63) to its (row, column) position
     private (int, int) GetSquarePosition(int square_index)
     {
-        int pos_row = -1;
-        int pos_col = -1;
+        int pos_row = -1;  // Initialize with invalid row
+        int pos_col = -1;  // Initialize with invalid column
 
-        for(int row = 0; row < 8; row++)
+        // Search through the entire grid
+        for (int row = 0; row < 8; row++)
         {
-            for(int col = 0; col < 8; col++)
+            for (int col = 0; col < 8; col++)
             {
                 if (line_data[row, col] == square_index)
                 {
-                    pos_row = row;
-                    pos_col = col;
+                    pos_row = row;  // Found matching row
+                    pos_col = col;  // Found matching column
                 }
             }
         }
 
-        return (pos_row, pos_col);
+        return (pos_row, pos_col);  // Returns tuple with (row, column)
     }
+
+    // Gets all squares in the vertical line containing the given square index
     public int[] GetVerticalLine(int square_index)
     {
-        int[] line = new int[8];
+        int[] line = new int[8];  // Will store the vertical line's indices
 
+        // Get the column position of the input square
         var square_position_col = GetSquarePosition(square_index).Item2;
 
-        for(int index = 0; index < 8; index++)
+        // Extract all squares in this column
+        for (int index = 0; index < 8; index++)
         {
             line[index] = line_data[index, square_position_col];
         }
-        return line;
+
+        return line;  // Returns array of 8 indices (the vertical line)
     }
 }
